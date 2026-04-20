@@ -1,0 +1,81 @@
+# ===========================================================================
+# docker-compose.yml – Fake Store API REST Assured Test Suite
+#
+# Services:
+#   tests   – runs mvn clean test and writes results to a named volume
+#   report  – generates and serves the Allure HTML report on http://localhost:8080
+#
+# Typical usage:
+#   docker-compose up --build           # build + run tests + serve report
+#   docker-compose up --build tests     # build + run tests only (no report)
+#   docker-compose up report            # serve report from existing results
+#   docker-compose down -v              # stop and remove volumes
+# ===========================================================================
+
+version: "3.9"
+
+# ---------------------------------------------------------------------------
+# Named volumes
+# ---------------------------------------------------------------------------
+volumes:
+  # Shared volume: the tests service writes allure-results here;
+  # the report service reads them from the same location.
+  allure-results:
+    driver: local
+
+  # Maven local repository cache – survives container restarts so
+  # dependencies are not re-downloaded every run.
+  maven-cache:
+    driver: local
+
+# ---------------------------------------------------------------------------
+# Services
+# ---------------------------------------------------------------------------
+services:
+
+  # ── tests: runs mvn clean test ──────────────────────────────────────────
+  tests:
+    build:
+      context: .
+      target: builder            # Only build Stage 1 (no Allure server needed)
+    container_name: fakestore-tests
+
+    # Override CMD: run maven test and write results, then exit.
+    command: >
+      mvn clean test -B
+      -Dorg.slf4j.simpleLogger.log.org.apache.maven=WARN
+
+    volumes:
+      # Cache the Maven local repository so dependencies persist across runs.
+      - maven-cache:/root/.m2
+      # Share allure-results with the report service.
+      - allure-results:/workspace/target/allure-results
+
+    environment:
+      # Override the base URL at container runtime if needed:
+      # BASE_URL: https://fakestoreapi.com
+      - BASE_URL=${BASE_URL:-https://fakestoreapi.com}
+
+    # Restart policy: never restart (tests are one-shot).
+    restart: "no"
+
+  # ── report: generates + serves Allure report ────────────────────────────
+  report:
+    build:
+      context: .
+      target: report             # Stage 2 of the multi-stage Dockerfile
+    container_name: fakestore-allure-report
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      # Read allure-results written by the tests service.
+      - allure-results:/report/allure-results
+
+    # Wait for tests to finish before starting the report server.
+    depends_on:
+      tests:
+        condition: service_completed_successfully
+
+    restart: "no"
