@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.fakestore</groupId>
+    <artifactId>fakestoreapi-restassured-tests</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>Fake Store API - REST Assured Test Suite</name>
+    <description>
+        Production-ready REST API automation framework for the Fake Store API.
+        Uses REST Assured, JUnit 5, Allure Reports, SLF4J + Logback, and Docker.
+    </description>
+
+    <!-- ================================================================== -->
+    <!--  Global version properties – update here, nowhere else              -->
+    <!-- ================================================================== -->
+    <properties>
+        <!-- Java -->
+        <java.version>21</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- REST Assured -->
+        <rest-assured.version>5.5.0</rest-assured.version>
+
+        <!-- JUnit 5 -->
+        <junit5.version>5.11.4</junit5.version>
+
+        <!-- Allure -->
+        <allure.version>2.29.1</allure.version>
+        <allure-maven.version>2.14.0</allure-maven.version>
+        <aspectj.version>1.9.22.1</aspectj.version>
+
+        <!-- JSON Schema Validator -->
+        <json-schema-validator.version>5.5.0</json-schema-validator.version>
+
+        <!-- Jackson (for POJO mapping) -->
+        <jackson.version>2.18.2</jackson.version>
+
+        <!-- Logging -->
+        <slf4j.version>2.0.16</slf4j.version>
+        <logback.version>1.5.16</logback.version>
+
+        <!-- AssertJ – fluent assertions in test classes -->
+        <assertj.version>3.26.3</assertj.version>
+
+        <!-- Maven plugins -->
+        <maven-surefire.version>3.5.2</maven-surefire.version>
+        <maven-compiler.version>3.13.0</maven-compiler.version>
+    </properties>
+
+    <!-- ================================================================== -->
+    <!--  Dependency Management (BOM-style pinning)                          -->
+    <!-- ================================================================== -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- JUnit 5 BOM -->
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit5.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Allure BOM -->
+            <dependency>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-bom</artifactId>
+                <version>${allure.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- ================================================================== -->
+    <!--  Runtime + Test Dependencies                                         -->
+    <!-- ================================================================== -->
+    <dependencies>
+
+        <!-- ======================== REST Assured ========================= -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${rest-assured.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- JSON Schema Validator (bundled with REST Assured ecosystem) -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>${json-schema-validator.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- ======================== JUnit 5 ============================== -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <!-- version managed by BOM -->
+            <scope>test</scope>
+        </dependency>
+
+        <!-- ======================== Allure =============================== -->
+        <!-- Allure JUnit 5 integration -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit5</artifactId>
+            <!-- version managed by BOM -->
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Allure REST Assured integration (auto-attaches request/response) -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-rest-assured</artifactId>
+            <!-- version managed by BOM -->
+            <scope>test</scope>
+        </dependency>
+
+        <!-- ======================== Jackson ============================== -->
+        <!-- Jackson Databind for POJO serialisation/deserialisation -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <!-- ======================== AssertJ ============================= -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- AspectJ Weaver – needed by Surefire -javaagent for @Step aspects -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- ======================== Logging ============================== -->
+        <!-- SLF4J API -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <!-- Logback Classic (SLF4J implementation) -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+
+    </dependencies>
+
+    <!-- ================================================================== -->
+    <!--  Build Plugins                                                       -->
+    <!-- ================================================================== -->
+    <build>
+        <plugins>
+
+            <!-- Maven Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <!--
+                Maven Surefire Plugin – runs JUnit 5 tests.
+                AspectJ agent is required for Allure's @Step / @Attachment
+                annotation processing at runtime.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire.version}</version>
+                <configuration>
+                    <!-- Write results to allure-results/ by default -->
+                    <systemPropertyVariables>
+                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                    </systemPropertyVariables>
+                    <!--
+                        AspectJ weaving at runtime – required for Allure's @Step / @Attachment
+                        annotations to be processed. The aspectjweaver JAR is on the test
+                        classpath (declared as a test-scoped dependency) and is resolved
+                        here via the Maven dependency plugin's properties goal.
+                        We use maven-dependency-plugin to set 'aspectjweaver' property.
+                    -->
+                    <argLine>-javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar</argLine>
+                    <properties>
+                        <configurationParameters>
+                            junit.jupiter.execution.parallel.enabled=false
+                        </configurationParameters>
+                    </properties>
+                </configuration>
+                <dependencies>
+                    <!-- Force Surefire to use JUnit Platform -->
+                    <dependency>
+                        <groupId>org.junit.platform</groupId>
+                        <artifactId>junit-platform-launcher</artifactId>
+                        <version>1.11.4</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- Allure Maven Plugin – generates HTML report from allure-results -->
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>${allure-maven.version}</version>
+                <configuration>
+                    <reportVersion>${allure.version}</reportVersion>
+                    <resultsDirectory>${project.build.directory}/allure-results</resultsDirectory>
+                    <reportDirectory>${project.build.directory}/allure-report</reportDirectory>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
