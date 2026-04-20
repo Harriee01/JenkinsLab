@@ -1,0 +1,36 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Update Product Response Schema",
+  "description": "Validates the response body returned by PUT /products/{id}. Fake Store API echoes back the updated payload.",
+  "type": "object",
+  "required": ["id"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "The product ID that was updated",
+      "minimum": 1
+    },
+    "title": {
+      "type": "string",
+      "description": "Updated product title"
+    },
+    "price": {
+      "type": "number",
+      "description": "Updated product price",
+      "exclusiveMinimum": 0
+    },
+    "description": {
+      "type": "string",
+      "description": "Updated product description"
+    },
+    "category": {
+      "type": "string",
+      "description": "Updated product category"
+    },
+    "image": {
+      "type": "string",
+      "description": "Updated product image URL"
+    }
+  }
+}

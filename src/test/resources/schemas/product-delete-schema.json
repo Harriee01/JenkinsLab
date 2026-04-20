@@ -1,0 +1,35 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Delete Product Response Schema",
+  "description": "Validates the response body returned by DELETE /products/{id}. Fake Store API echoes back the deleted product.",
+  "type": "object",
+  "required": ["id"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "The product ID that was deleted",
+      "minimum": 1
+    },
+    "title": {
+      "type": "string",
+      "description": "Title of the deleted product"
+    },
+    "price": {
+      "type": "number",
+      "description": "Price of the deleted product"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the deleted product"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category of the deleted product"
+    },
+    "image": {
+      "type": "string",
+      "description": "Image URL of the deleted product"
+    }
+  }
+}

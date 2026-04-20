@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  logback-test.xml – Logback configuration loaded automatically during test execution.
+
+  Layout:
+    - Console appender: colourised ANSI output with timestamp, thread, level, logger, and message.
+    - File appender:    Rolling log file rotated daily, kept for 7 days.  Written to target/logs/.
+
+  Log Levels:
+    - Root:                         INFO  (catches everything not overridden below)
+    - com.fakestore:                DEBUG (full framework + test logging)
+    - io.restassured:               WARN  (REST Assured internals → only show warnings+)
+    - org.apache.http:              WARN  (Apache HTTP Client internals)
+    - com.fasterxml.jackson:        WARN  (Jackson internals)
+-->
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <!-- ============================================================ -->
+    <!-- Properties                                                    -->
+    <!-- ============================================================ -->
+    <property name="LOG_DIR"     value="${project.build.directory:-target}/logs" />
+    <property name="LOG_FILE"    value="${LOG_DIR}/fakestore-tests.log" />
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n" />
+    <!-- ANSI colour pattern for console -->
+    <property name="COLOR_PATTERN"
+              value="%d{HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{36}) - %msg%n" />
+
+    <!-- ============================================================ -->
+    <!-- Console Appender (STDOUT)                                     -->
+    <!-- ============================================================ -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${COLOR_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ============================================================ -->
+    <!-- Rolling File Appender                                         -->
+    <!-- ============================================================ -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Daily rotation; keep 7 days of history -->
+            <fileNamePattern>${LOG_DIR}/fakestore-tests-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ============================================================ -->
+    <!-- Logger – Framework classes (DEBUG)                            -->
+    <!-- ============================================================ -->
+    <logger name="com.fakestore" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <!-- ============================================================ -->
+    <!-- Logger – noisy third-party libraries (suppress to WARN)       -->
+    <!-- ============================================================ -->
+    <logger name="io.restassured"            level="WARN" />
+    <logger name="org.apache.http"           level="WARN" />
+    <logger name="com.fasterxml.jackson"     level="WARN" />
+    <logger name="groovy.lang"               level="WARN" />
+    <logger name="org.codehaus.groovy"       level="WARN" />
+
+    <!-- ============================================================ -->
+    <!-- Root logger – catch-all at INFO                               -->
+    <!-- ============================================================ -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+
+</configuration>

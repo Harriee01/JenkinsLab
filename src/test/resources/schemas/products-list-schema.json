@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Products List Schema",
+  "description": "Validates the array of products returned by GET /products",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "required": ["id", "title", "price", "description", "category", "image", "rating"],
+    "additionalProperties": true,
+    "properties": {
+      "id": {
+        "type": "integer",
+        "description": "Unique numeric identifier assigned by the server",
+        "minimum": 1
+      },
+      "title": {
+        "type": "string",
+        "description": "Product display name",
+        "minLength": 1
+      },
+      "price": {
+        "type": "number",
+        "description": "Product price in USD",
+        "exclusiveMinimum": 0
+      },
+      "description": {
+        "type": "string",
+        "description": "Long-form product description"
+      },
+      "category": {
+        "type": "string",
+        "description": "Product category",
+        "enum": ["electronics", "jewelery", "men's clothing", "women's clothing"]
+      },
+      "image": {
+        "type": "string",
+        "description": "Absolute URL to the product image",
+        "format": "uri"
+      },
+      "rating": {
+        "type": "object",
+        "required": ["rate", "count"],
+        "properties": {
+          "rate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

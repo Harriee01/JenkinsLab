@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Create Product Response Schema",
+  "description": "Validates the response body returned by POST /products. Fake Store API echoes back the sent payload with an auto-assigned id.",
+  "type": "object",
+  "required": ["id"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Server-assigned product ID (always present in the create response)",
+      "minimum": 1
+    },
+    "title": {
+      "type": "string",
+      "description": "Echoed product title"
+    },
+    "price": {
+      "type": "number",
+      "description": "Echoed product price"
+    },
+    "description": {
+      "type": "string",
+      "description": "Echoed product description"
+    },
+    "category": {
+      "type": "string",
+      "description": "Echoed product category"
+    },
+    "image": {
+      "type": "string",
+      "description": "Echoed product image URL"
+    }
+  }
+}
